@@ -4,3 +4,24 @@ result-*
 
 # Ignore automatically generated direnv output
 .direnv
+
+# Local configurations
+.claude/
+.cache/
+.config/
+.local/
+.npm/
+.viminfo
+.claude.json
+.claude.json.backup
+.bash_history
+.w3m/
+debug.log
+
+# Secrets - never commit
+.secrets/
+.gnupg/
+.envrc.local
+
+# Temp Folder for test scripts etc.
+/tmp
