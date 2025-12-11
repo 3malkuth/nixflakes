@@ -25,6 +25,7 @@
         in
         {
           acli = pkgs.acli;
+          claude-code = pkgs.claude-code;
         }
       );
 

@@ -13,7 +13,6 @@ let
     less
     neomutt
     nodejs_20
-    claude-code
     starship
   ];
 
@@ -21,6 +20,7 @@ let
   # These are defined in nix/overlays/default.nix
   custom = with pkgs; [
     acli
+    claude-code
   ];
 in
 {

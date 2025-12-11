@@ -4,4 +4,5 @@
 final: prev: {
   # Custom packages overlay
   acli = final.callPackage ../packages/acli { };
+  claude-code = final.callPackage ../packages/claude { };
 }
