@@ -5,6 +5,9 @@ result-*
 # Ignore automatically generated direnv output
 .direnv
 
+# Ignore nixflakes gitignore file (created by template)
+.gitignore.nixflakes
+
 # Local configurations
 .claude/
 .cache/

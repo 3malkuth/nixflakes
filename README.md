@@ -20,6 +20,11 @@ You can use these packages and overlays in your own Nix projects in several ways
    nix develop
    ```
 
+   This will automatically:
+   - Create a `.gitignore.nixflakes` file with recommended patterns
+   - Add these patterns to your `.gitignore` (only if not already present)
+   - Load the nixflakes packages into your environment
+
 3. **Or run packages directly**:
    ```bash
    nix run github:3malkuth/nixflakes#claude-code
@@ -143,6 +148,23 @@ Or with overlay:
   ];
 }
 ```
+
+## Gitignore Integration
+
+When you use the template and run `nix develop`, it automatically:
+
+1. Creates a `.gitignore.nixflakes` file with recommended patterns for Nix development
+2. Appends these patterns to your main `.gitignore` file (if not already present)
+3. Uses marker comments to prevent duplicate additions
+
+The patterns include:
+- Nix build outputs (`result`, `result-*`)
+- direnv files (`.direnv`)
+- Local development configurations
+- Secrets and sensitive files
+- Temporary directories
+
+If you already have these patterns or don't want them, you can safely remove them from your `.gitignore` after the first run.
 
 ## Try Without Installing
 
