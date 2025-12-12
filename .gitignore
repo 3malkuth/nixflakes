@@ -29,3 +29,33 @@ debug.log
 # Temp Folder for test scripts etc.
 /tmp
 
+
+# BEGIN nixflakes gitignore patterns (auto-generated)
+# Ignore build outputs from performing a nix-build or nix build command
+result
+result-*
+
+# Ignore automatically generated direnv output
+.direnv
+
+# Local configurations
+.claude/
+.cache/
+.config/
+.local/
+.npm/
+.viminfo
+.claude.json
+.claude.json.backup
+.bash_history
+.w3m/
+debug.log
+
+# Secrets - never commit
+.secrets/
+.gnupg/
+.envrc.local
+
+# Temp Folder for test scripts etc.
+/tmp
+# END nixflakes gitignore patterns

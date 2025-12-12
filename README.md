@@ -9,7 +9,20 @@ A collection of Nix flakes providing custom packages and overlays for easy reuse
 
 ## Usage in Your Project
 
-You can use these packages and overlays in your own Nix projects in several ways:
+You can use these packages, overlays, and shell configurations in your own Nix projects.
+
+### Overlay Features
+
+The `nixflakes.overlays.default` provides:
+- **acli** - Anthropic CLI package
+- **claude-code** - Claude Code CLI package
+- **mkNixflakesShell** - Pre-configured devshell function with:
+  - Starship prompt setup
+  - Isolated environment (HOME, XDG directories redirected to project)
+  - Automatic gitignore pattern management
+  - Secrets management with .envrc.local
+  - Useful development tools (neovim, git, starship, etc.)
+  - Helpful aliases (v=nvim, l=ls -alh, s=git status)
 
 ### Quick Start
 
@@ -31,7 +44,46 @@ You can use these packages and overlays in your own Nix projects in several ways
    nix run github:3malkuth/nixflakes#acli
    ```
 
-### Method 1: Use Packages Directly
+### Method 1: Use the Template with Shell Configuration (Recommended)
+
+The template uses `mkNixflakesShell` from the overlay to get a pre-configured development environment:
+
+```nix
+{
+  inputs = {
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    nixflakes.url = "github:3malkuth/nixflakes";
+    devshell.url = "github:numtide/devshell";
+    devshell.inputs.nixpkgs.follows = "nixpkgs";
+  };
+
+  outputs = { self, nixpkgs, nixflakes, devshell }:
+    let
+      system = "x86_64-linux";
+      pkgs = import nixpkgs {
+        inherit system;
+        overlays = [
+          devshell.overlays.default
+          nixflakes.overlays.default
+        ];
+      };
+    in
+    {
+      devShells.${system}.default = pkgs.mkNixflakesShell {
+        # Optionally add extra packages
+        extraPackages = [ pkgs.python3 ];
+        # Optionally add extra startup commands
+        extraStartup = ''
+          echo "My custom startup message"
+        '';
+      };
+    };
+}
+```
+
+This gives you all the nixflakes features (starship, gitignore, secrets, etc.) plus the acli and claude-code packages!
+
+### Method 2: Use Packages Directly (Without Shell Config)
 
 Add to your `flake.nix`:
 
@@ -58,9 +110,9 @@ Add to your `flake.nix`:
 }
 ```
 
-### Method 2: Use the Overlay
+### Method 3: Use Just the Packages (No Shell Config)
 
-Add to your `flake.nix`:
+If you only want the packages without the shell configuration:
 
 ```nix
 {
@@ -88,7 +140,7 @@ Add to your `flake.nix`:
 }
 ```
 
-### Method 3: NixOS Configuration
+### Method 4: NixOS Configuration
 
 In your `/etc/nixos/flake.nix`:
 
@@ -124,7 +176,7 @@ Then in your `configuration.nix`:
 }
 ```
 
-### Method 4: Home Manager
+### Method 5: Home Manager
 
 In your `home.nix`:
 

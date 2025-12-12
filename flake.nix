@@ -30,6 +30,10 @@
       );
 
       # Expose overlays for reuse in other flakes
+      # The overlay includes:
+      # - acli: Anthropic CLI
+      # - claude-code: Claude Code CLI
+      # - mkNixflakesShell: Function to create pre-configured devshell
       overlays.default = import ./nix/overlays;
 
       devShells = forAllSystems (system:
@@ -47,24 +51,10 @@
             config.allowUnfree = true;
           };
 
-          # Import package sets (uses pkgs with overlays applied)
-          packages = import ./nix/packages { inherit pkgs; };
-
-          # Import shell configuration
-          shellConfig = import ./nix/config/shell.nix { inherit pkgs; };
-
         in
         {
-          default = pkgs.devshell.mkShell {
-            name = "nix-shell";
-
-            # Use the combined package set
-            packages = packages.all;
-
-            env = shellConfig.env;
-
-            devshell.startup.init.text = shellConfig.startup;
-          };
+          # Use the mkNixflakesShell function from our overlay
+          default = pkgs.mkNixflakesShell { };
         }
       );
     };
