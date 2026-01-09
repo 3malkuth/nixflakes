@@ -27,6 +27,7 @@
           acli = pkgs.acli;
           claude-code = pkgs.claude-code;
           python3Custom = pkgs.python3Custom;
+          postgresqlLocal = pkgs.postgresqlLocal;
         }
       );
 
@@ -35,6 +36,7 @@
       # - acli: Anthropic CLI
       # - claude-code: Claude Code CLI
       # - python3Custom: Python3 with customizable packages
+      # - postgresqlLocal: PostgreSQL with local data/config directories
       # - mkNixflakesShell: Function to create pre-configured devshell
       overlays.default = import ./nix/overlays;
 

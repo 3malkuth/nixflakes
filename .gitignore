@@ -29,6 +29,10 @@ debug.log
 # Temp Folder for test scripts etc.
 /tmp
 
+# PostgreSQL local data and config
+/postgresql_data/
+/postgresql_config/
+
 
 # BEGIN nixflakes gitignore patterns (auto-generated)
 # Ignore build outputs from performing a nix-build or nix build command

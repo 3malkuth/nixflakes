@@ -40,8 +40,9 @@
           extraStartup = ''
 	    # Ensure Nix-provided Python takes precedence over system Python
             export PATH="${pkgs.python3Custom}/bin:$PATH"
-            echo "Using Nix-managed packages: acli, claude-code, python3Custom"
+            echo "Using Nix-managed packages: acli, claude-code, python3Custom, postgresqlLocal"
             echo "Python: $(which python3)"
+            echo "PostgreSQL data: postgresql_data/"
           '';
         };
 
@@ -51,6 +52,7 @@
             pkgs.acli
             pkgs.claude-code
             pkgs.python3Custom
+            pkgs.postgresqlLocal
           ];
         };
 
@@ -78,6 +80,7 @@
         acli = pkgs.acli;
         claude-code = pkgs.claude-code;
         python3Custom = pkgs.python3Custom;
+        postgresqlLocal = pkgs.postgresqlLocal;
 
         # Example: Custom Python with specific packages
         python3WithPackages = pkgs.python3.withPackages (ps: with ps; [
@@ -99,6 +102,7 @@
       #   acli
       #   claude-code
       #   python3Custom
+      #   postgresqlLocal
       #   # Or with custom packages:
       #   (python3.withPackages (ps: with ps; [ requests numpy pandas ]))
       # ];
@@ -110,6 +114,7 @@
       #   acli
       #   claude-code
       #   python3Custom
+      #   postgresqlLocal
       #   # Or with custom packages:
       #   (python3.withPackages (ps: with ps; [ requests numpy pandas ]))
       # ];

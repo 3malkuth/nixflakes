@@ -11,6 +11,11 @@ final: prev: {
   # Default: python3Custom = (pkgs.callPackage ../packages/python3 { }) { }; (includes only pip, setuptools, wheel)
   python3Custom = (final.callPackage ../packages/python3 { }) { };
 
+  # PostgreSQL with local data and config directories
+  # Data directory: postgresql_data/
+  # Config directory: postgresql_config/
+  postgresqlLocal = final.callPackage ../packages/postgresql { };
+
   # Shell configuration function
   # Usage: pkgs.mkNixflakesShell { extraPackages = [...]; extraStartup = "..."; }
   mkNixflakesShell = final.callPackage ../packages/shell { };
