@@ -38,7 +38,10 @@
         # This includes starship, gitignore setup, secrets management, etc.
         default = pkgs.mkNixflakesShell {
           extraStartup = ''
-            echo "Available custom packages: acli, claude-code, python3Custom"
+	    # Ensure Nix-provided Python takes precedence over system Python
+            export PATH="${pkgs.python3Custom}/bin:$PATH"
+            echo "Using Nix-managed packages: acli, claude-code, python3Custom"
+            echo "Python: $(which python3)"
           '';
         };
 
