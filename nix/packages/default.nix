@@ -21,6 +21,7 @@ let
   custom = with pkgs; [
     acli
     claude-code
+    python3Custom
   ];
 in
 {

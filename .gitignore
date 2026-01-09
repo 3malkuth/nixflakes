@@ -49,6 +49,9 @@ result-*
 .claude.json.backup
 .bash_history
 .w3m/
+.python_history
+
+
 debug.log
 
 # Secrets - never commit
