@@ -38,7 +38,7 @@
         # This includes starship, gitignore setup, secrets management, etc.
         default = pkgs.mkNixflakesShell {
           extraStartup = ''
-            echo "Available custom packages: acli, claude-code"
+            echo "Available custom packages: acli, claude-code, python3Custom"
           '';
         };
 
@@ -47,6 +47,24 @@
           buildInputs = [
             pkgs.acli
             pkgs.claude-code
+            pkgs.python3Custom
+          ];
+        };
+
+        # Example: Python3 shell with additional packages
+        # To add Python packages, override python3Custom with your desired packages
+        python = pkgs.mkShell {
+          buildInputs = with pkgs; [
+            # Default python3Custom includes pip, setuptools, wheel
+            # To add more packages:
+            (python3.withPackages (ps: with ps; [
+              pip
+              setuptools
+              wheel
+              requests
+              numpy
+              pandas
+            ]))
           ];
         };
       };
@@ -56,17 +74,41 @@
         # Access packages via overlay
         acli = pkgs.acli;
         claude-code = pkgs.claude-code;
+        python3Custom = pkgs.python3Custom;
+
+        # Example: Custom Python with specific packages
+        python3WithPackages = pkgs.python3.withPackages (ps: with ps; [
+          pip
+          setuptools
+          wheel
+          requests
+          numpy
+          pandas
+        ]);
+
         default = pkgs.claude-code;
       };
 
       # For NixOS configuration:
       # In /etc/nixos/configuration.nix, add to imports:
       # nixpkgs.overlays = [ inputs.nixflakes.overlays.default ];
-      # environment.systemPackages = with pkgs; [ acli claude-code ];
+      # environment.systemPackages = with pkgs; [
+      #   acli
+      #   claude-code
+      #   python3Custom
+      #   # Or with custom packages:
+      #   (python3.withPackages (ps: with ps; [ requests numpy pandas ]))
+      # ];
 
       # For home-manager:
       # In home.nix:
       # nixpkgs.overlays = [ inputs.nixflakes.overlays.default ];
-      # home.packages = with pkgs; [ acli claude-code ];
+      # home.packages = with pkgs; [
+      #   acli
+      #   claude-code
+      #   python3Custom
+      #   # Or with custom packages:
+      #   (python3.withPackages (ps: with ps; [ requests numpy pandas ]))
+      # ];
     };
 }

@@ -26,6 +26,7 @@
         {
           acli = pkgs.acli;
           claude-code = pkgs.claude-code;
+          python3Custom = pkgs.python3Custom;
         }
       );
 
@@ -33,6 +34,7 @@
       # The overlay includes:
       # - acli: Anthropic CLI
       # - claude-code: Claude Code CLI
+      # - python3Custom: Python3 with customizable packages
       # - mkNixflakesShell: Function to create pre-configured devshell
       overlays.default = import ./nix/overlays;
 
