@@ -22,6 +22,7 @@ let
     acli
     claude-code
     python3Custom
+    postgresqlLocal
   ];
 in
 {
