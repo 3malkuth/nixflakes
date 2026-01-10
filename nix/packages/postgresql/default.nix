@@ -1,6 +1,7 @@
 { lib
 , postgresql_17
 , writeShellScriptBin
+, writeTextFile
 , makeWrapper
 , symlinkJoin
 }:
@@ -9,26 +10,51 @@ let
   # Get the repo root directory (4 levels up from this file)
   repoRoot = builtins.toString ../../../..;
 
-  # PostgreSQL wrapper that sets up local data and config directories
-  postgresqlWrapper = writeShellScriptBin "postgres" ''
-    export PGDATA="${repoRoot}/postgresql_data"
-    export PGHOST="$PGDATA"
+  # Setup script that runs on shell initialization
+  setupScript = writeShellScriptBin "postgresql-setup" ''
+    # Function to set PostgreSQL environment variables
+    setup_postgresql_env() {
+      if [ -z "$PGDATA" ]; then
+        export PGDATA="${repoRoot}/postgresql_data"
+      fi
 
-    # Ensure directories exist
-    mkdir -p "$PGDATA"
-    mkdir -p "${repoRoot}/postgresql_config"
+      if [ -z "$PGHOST" ]; then
+        export PGHOST="$PGDATA"
+      fi
+    }
 
-    # Initialize database if it doesn't exist
-    if [ ! -f "$PGDATA/PG_VERSION" ]; then
-      echo "Initializing PostgreSQL database in $PGDATA..."
-      ${postgresql_17}/bin/initdb -D "$PGDATA" \
-        --encoding=UTF8 \
-        --locale=C \
-        --auth=trust \
-        --username=postgres
+    # Function to create directories if they don't exist
+    setup_postgresql_dirs() {
+      if [ ! -d "${repoRoot}/postgresql_data" ]; then
+        mkdir -p "${repoRoot}/postgresql_data"
+        echo "✓ Created postgresql_data directory"
+      fi
 
-      # Create a custom postgresql.conf in the config directory
-      cat > "${repoRoot}/postgresql_config/postgresql.conf" <<EOF
+      if [ ! -d "${repoRoot}/postgresql_config" ]; then
+        mkdir -p "${repoRoot}/postgresql_config"
+        echo "✓ Created postgresql_config directory"
+      fi
+    }
+
+    # Function to initialize PostgreSQL database
+    setup_postgresql_init() {
+      if [ ! -f "$PGDATA/PG_VERSION" ]; then
+        echo "Initializing PostgreSQL database in $PGDATA..."
+        ${postgresql_17}/bin/initdb -D "$PGDATA" \
+          --encoding=UTF8 \
+          --locale=C \
+          --auth=trust \
+          --username=postgres
+        echo "✓ PostgreSQL database initialized"
+      fi
+    }
+
+    # Function to create config file
+    setup_postgresql_config() {
+      local config_file="${repoRoot}/postgresql_config/postgresql.conf"
+
+      if [ ! -f "$config_file" ]; then
+        cat > "$config_file" <<EOF
 # Custom PostgreSQL configuration
 # Data directory: $PGDATA
 # Unix socket directory: $PGDATA
@@ -38,9 +64,28 @@ port = 5432
 max_connections = 100
 shared_buffers = 128MB
 EOF
+        echo "✓ Created postgresql.conf in postgresql_config/"
+      fi
 
-      # Copy the config to data directory
-      cp "${repoRoot}/postgresql_config/postgresql.conf" "$PGDATA/postgresql.conf"
+      # Copy config to data directory if not already there
+      if [ -f "$config_file" ] && [ ! -f "$PGDATA/postgresql.conf" ]; then
+        cp "$config_file" "$PGDATA/postgresql.conf"
+        echo "✓ Copied postgresql.conf to data directory"
+      fi
+    }
+
+    # Run setup functions in order
+    setup_postgresql_env
+    setup_postgresql_dirs
+    setup_postgresql_init
+    setup_postgresql_config
+  '';
+
+  # PostgreSQL wrapper that sets up local data and config directories
+  postgresqlWrapper = writeShellScriptBin "postgres" ''
+    # Run setup if not already done
+    if [ -z "$PGDATA" ]; then
+      postgresql-setup
     fi
 
     # Run postgres with the configured data directory
@@ -49,29 +94,37 @@ EOF
 
   # Wrapper for pg_ctl
   pgCtlWrapper = writeShellScriptBin "pg_ctl" ''
-    export PGDATA="${repoRoot}/postgresql_data"
-    export PGHOST="$PGDATA"
+    # Run setup if not already done
+    if [ -z "$PGDATA" ]; then
+      postgresql-setup
+    fi
     exec ${postgresql_17}/bin/pg_ctl "$@"
   '';
 
   # Wrapper for psql
   psqlWrapper = writeShellScriptBin "psql" ''
-    export PGDATA="${repoRoot}/postgresql_data"
-    export PGHOST="$PGDATA"
+    # Run setup if not already done
+    if [ -z "$PGDATA" ]; then
+      postgresql-setup
+    fi
     exec ${postgresql_17}/bin/psql "$@"
   '';
 
   # Wrapper for createdb
   createdbWrapper = writeShellScriptBin "createdb" ''
-    export PGDATA="${repoRoot}/postgresql_data"
-    export PGHOST="$PGDATA"
+    # Run setup if not already done
+    if [ -z "$PGDATA" ]; then
+      postgresql-setup
+    fi
     exec ${postgresql_17}/bin/createdb "$@"
   '';
 
   # Wrapper for dropdb
   dropdbWrapper = writeShellScriptBin "dropdb" ''
-    export PGDATA="${repoRoot}/postgresql_data"
-    export PGHOST="$PGDATA"
+    # Run setup if not already done
+    if [ -z "$PGDATA" ]; then
+      postgresql-setup
+    fi
     exec ${postgresql_17}/bin/dropdb "$@"
   '';
 
@@ -80,6 +133,7 @@ symlinkJoin {
   name = "postgresql-local";
   paths = [
     postgresql_17
+    setupScript
     postgresqlWrapper
     pgCtlWrapper
     psqlWrapper

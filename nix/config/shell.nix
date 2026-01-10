@@ -56,6 +56,11 @@ EOF
     # Source local secrets
     [ -f .envrc.local ] && source .envrc.local
 
+    # Setup PostgreSQL environment
+    if command -v postgresql-setup &> /dev/null; then
+      postgresql-setup
+    fi
+
     # Initialize starship prompt
     eval "$(starship init bash)"
 
