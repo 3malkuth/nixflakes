@@ -46,25 +46,46 @@ let
     # Function to create config file
     setup_postgresql_config() {
       local config_file="$CONFIG_DIR/postgresql.conf"
+      local pgdata_config="$PGDATA/postgresql.conf"
 
+      # Create custom config template in CONFIG_DIR if it doesn't exist
       if [ ! -f "$config_file" ]; then
         cat > "$config_file" <<EOF
 # Custom PostgreSQL configuration
-# Data directory: $PGDATA
-# Unix socket directory: $PGDATA
+# Data directory: dynamically set to \$PGDATA
+# Unix socket directory: dynamically set to \$PGDATA
+listen_addresses = 'localhost'
+port = 5432
+max_connections = 100
+shared_buffers = 128MB
+EOF
+        echo "✓ Created postgresql.conf template in postgresql_config/"
+      fi
+
+      # Update or create the postgresql.conf in PGDATA
+      if [ -f "$pgdata_config" ]; then
+        # Update existing config to use current PGDATA for socket directory
+        if grep -q "^#*unix_socket_directories" "$pgdata_config"; then
+          # Replace existing line (commented or uncommented) with actual PGDATA path
+          sed -i "s|^#*unix_socket_directories.*|unix_socket_directories = '$PGDATA'|" "$pgdata_config"
+          echo "✓ Updated unix_socket_directories to $PGDATA"
+        else
+          # Add if not present
+          echo "unix_socket_directories = '$PGDATA'" >> "$pgdata_config"
+          echo "✓ Added unix_socket_directories = $PGDATA"
+        fi
+      else
+        # Create new config with PGDATA
+        cat > "$pgdata_config" <<EOF
+# PostgreSQL configuration
+# Unix socket directory set to data directory for local development
 unix_socket_directories = '$PGDATA'
 listen_addresses = 'localhost'
 port = 5432
 max_connections = 100
 shared_buffers = 128MB
 EOF
-        echo "✓ Created postgresql.conf in postgresql_config/"
-      fi
-
-      # Copy config to data directory if not already there
-      if [ -f "$config_file" ] && [ ! -f "$PGDATA/postgresql.conf" ]; then
-        cp "$config_file" "$PGDATA/postgresql.conf"
-        echo "✓ Copied postgresql.conf to data directory"
+        echo "✓ Created postgresql.conf in data directory"
       fi
     }
 

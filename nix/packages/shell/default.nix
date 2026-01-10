@@ -24,6 +24,11 @@ result-*
 .direnv
 
 # Local configurations
+postgresql_data/
+postgresql_config/
+debug.log
+
+.python_history
 .claude/
 .cache/
 .config/
@@ -34,7 +39,6 @@ result-*
 .claude.json.backup
 .bash_history
 .w3m/
-debug.log
 
 # Secrets - never commit
 .secrets/
@@ -43,6 +47,7 @@ debug.log
 
 # Temp Folder for test scripts etc.
 /tmp
+
 EOF
 
     # Check if main .gitignore exists, create if it doesn't
