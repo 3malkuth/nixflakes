@@ -1,8 +1,7 @@
+# BEGIN nixflakes gitignore patterns (auto-generated)
+
 .gitignore.nixflakes
 
-
-
-######################################
 # Ignore build outputs from performing a nix-build or nix build command
 result
 result-*
@@ -14,6 +13,7 @@ result-*
 postgresql_data/
 postgresql_config/
 debug.log
+
 .python_history
 .claude/
 .cache/
@@ -33,5 +33,5 @@ debug.log
 
 # Temp Folder for test scripts etc.
 /tmp
-######################################
 
+# END nixflakes gitignore patterns

@@ -16,6 +16,10 @@ let
 
     # Create the nixflakes gitignore file with recommended patterns
     cat > "$GITIGNORE_NIXFLAKES" << 'EOF'
+
+# the nixflakes generated .gitignore file
+.gitignore.nixflakes
+
 # Ignore build outputs from performing a nix-build or nix build command
 result
 result-*
