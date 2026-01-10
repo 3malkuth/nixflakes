@@ -58,7 +58,12 @@ EOF
 
     # Setup PostgreSQL environment
     if command -v postgresql-setup &> /dev/null; then
+      # Run setup (creates dirs and initializes if needed)
       postgresql-setup
+
+      # Set environment variables in current shell
+      export PGDATA="$PRJ_ROOT/postgresql_data"
+      export PGHOST="$PGDATA"
     fi
 
     # Initialize starship prompt

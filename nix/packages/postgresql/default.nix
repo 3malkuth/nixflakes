@@ -7,31 +7,25 @@
 }:
 
 let
-  # Get the repo root directory (4 levels up from this file)
-  repoRoot = builtins.toString ../../../..;
-
   # Setup script that runs on shell initialization
   setupScript = writeShellScriptBin "postgresql-setup" ''
-    # Function to set PostgreSQL environment variables
-    setup_postgresql_env() {
-      if [ -z "$PGDATA" ]; then
-        export PGDATA="${repoRoot}/postgresql_data"
-      fi
+    # Use PRJ_ROOT if available (from devshell), otherwise use PWD
+    REPO_ROOT="''${PRJ_ROOT:-$PWD}"
+    DATA_DIR="$REPO_ROOT/postgresql_data"
+    CONFIG_DIR="$REPO_ROOT/postgresql_config"
 
-      if [ -z "$PGHOST" ]; then
-        export PGHOST="$PGDATA"
-      fi
-    }
+    # Use provided PGDATA or default to repo data dir
+    PGDATA="''${PGDATA:-$DATA_DIR}"
 
     # Function to create directories if they don't exist
     setup_postgresql_dirs() {
-      if [ ! -d "${repoRoot}/postgresql_data" ]; then
-        mkdir -p "${repoRoot}/postgresql_data"
+      if [ ! -d "$DATA_DIR" ]; then
+        mkdir -p "$DATA_DIR"
         echo "✓ Created postgresql_data directory"
       fi
 
-      if [ ! -d "${repoRoot}/postgresql_config" ]; then
-        mkdir -p "${repoRoot}/postgresql_config"
+      if [ ! -d "$CONFIG_DIR" ]; then
+        mkdir -p "$CONFIG_DIR"
         echo "✓ Created postgresql_config directory"
       fi
     }
@@ -51,7 +45,7 @@ let
 
     # Function to create config file
     setup_postgresql_config() {
-      local config_file="${repoRoot}/postgresql_config/postgresql.conf"
+      local config_file="$CONFIG_DIR/postgresql.conf"
 
       if [ ! -f "$config_file" ]; then
         cat > "$config_file" <<EOF
@@ -75,7 +69,6 @@ EOF
     }
 
     # Run setup functions in order
-    setup_postgresql_env
     setup_postgresql_dirs
     setup_postgresql_init
     setup_postgresql_config
