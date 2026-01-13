@@ -9,11 +9,12 @@
     { name = "XDG_CACHE_HOME"; eval = "$PRJ_ROOT/.cache"; }
     { name = "SECRETS_DIR"; eval = "$PRJ_ROOT/.secrets"; }
     { name = "STARSHIP_CONFIG"; eval = "$PRJ_ROOT/.config/starship.toml"; }
+    { name = "CLAUDE_CONFIG_DIR"; eval = "$PRJ_ROOT/nixroot/.claude"; }
   ];
 
   # Startup script
   startup = ''
-    mkdir -p .config .local/share .cache .secrets
+    mkdir -p .config .local/share .cache .secrets nixroot/.claude
 
     # Ensure .secrets is gitignored
     if [ ! -f .gitignore ] || ! grep -q "^\.secrets" .gitignore 2>/dev/null; then

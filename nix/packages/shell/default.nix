@@ -27,20 +27,20 @@ result-*
 # Ignore automatically generated direnv output
 .direnv
 
-# Local configurations
+# nixroot - all package configs and data files
+nixroot/
+
+# Legacy local configurations (will be moved to nixroot/)
 postgresql_data/
 postgresql_config/
 debug.log
 
 .python_history
-.claude/
 .cache/
 .config/
 .local/
 .npm/
 .viminfo
-.claude.json
-.claude.json.backup
 .bash_history
 .w3m/
 
