@@ -10,11 +10,17 @@
     { name = "SECRETS_DIR"; eval = "$PRJ_ROOT/.secrets"; }
     { name = "STARSHIP_CONFIG"; eval = "$PRJ_ROOT/.config/starship.toml"; }
     { name = "CLAUDE_CONFIG_DIR"; eval = "$PRJ_ROOT/nixroot/.claude"; }
+
+    # Python3 configuration
+    { name = "PYTHONHISTFILE"; eval = "$PRJ_ROOT/nixroot/python3/.python_history"; }
+    { name = "PYTHONPYCACHEPREFIX"; eval = "$PRJ_ROOT/nixroot/python3/__pycache__"; }
+    { name = "PYTHONUSERBASE"; eval = "$PRJ_ROOT/nixroot/python3/.local"; }
   ];
 
   # Startup script
   startup = ''
     mkdir -p .config .local/share .cache .secrets nixroot/.claude
+    mkdir -p nixroot/python3/.local nixroot/python3/__pycache__
 
     # Ensure .secrets is gitignored
     if [ ! -f .gitignore ] || ! grep -q "^\.secrets" .gitignore 2>/dev/null; then

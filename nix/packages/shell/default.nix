@@ -34,8 +34,6 @@ nixroot/
 postgresql_data/
 postgresql_config/
 debug.log
-
-.python_history
 .cache/
 .config/
 .local/
